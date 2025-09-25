@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.cglib.core.Local;
+
+import java.time.LocalTime;
 
 @Entity
 @Table(name ="receitas")
@@ -25,7 +28,6 @@ public class Receitas {
     @Size(max = 1000, message = "O modo de preparo deve ter no máximo 1000 caracteres")
     private String modoDePreparo;
 
-    @NotBlank("O tempo de preparo não pode estar em branco")
     private LocalTime tempoDePreparo;
 
     public Receitas() {}
@@ -54,15 +56,15 @@ public class Receitas {
     public String getIngredientes() {
         return ingredientes;
     }
-    public void setIngredientes() { this.ingredientes = ingredientes}
+    public void setIngredientes(String ingredientes) { this.ingredientes = ingredientes; }
 
     public String getModoDePreparo() {
         return modoDePreparo;
     }
-    public void setModoDePreparo() { this.modoDePreparo = modoDePreparo}
+    public void setModoDePreparo(String modoDePreparo) { this.modoDePreparo = modoDePreparo; }
 
-    public String getTempoDePreparo() {
+    public LocalTime getTempoDePreparo() {
         return tempoDePreparo;
     }
-    public void setTempoDePreparo() { this.tempoDePreparo = tempoDePreparo}
+    public void setTempoDePreparo(LocalTime tempoDePreparo) { this.tempoDePreparo = tempoDePreparo; }
 }
