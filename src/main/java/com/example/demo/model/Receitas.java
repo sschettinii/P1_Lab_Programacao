@@ -28,11 +28,13 @@ public class Receitas {
     @Size(max = 1000, message = "O modo de preparo deve ter no máximo 1000 caracteres")
     private String modoDePreparo;
 
-    private LocalTime tempoDePreparo;
+    @NotBlank(message = "O tempo de preparo não pode estar em branco")
+    @Size(max = 20, message = "O tempo de preparo deve ter no máximo 1000 caracteres")
+    private String tempoDePreparo;
 
     public Receitas() {}
 
-    public Receitas(String nome, String ingredientes, String modoDePreparo, LocalTime tempoDePreparo) {
+    public Receitas(String nome, String ingredientes, String modoDePreparo, String tempoDePreparo) {
         this.nome = nome;
         this.ingredientes = ingredientes;
         this.modoDePreparo = modoDePreparo;
@@ -63,8 +65,8 @@ public class Receitas {
     }
     public void setModoDePreparo(String modoDePreparo) { this.modoDePreparo = modoDePreparo; }
 
-    public LocalTime getTempoDePreparo() {
+    public String getTempoDePreparo() {
         return tempoDePreparo;
     }
-    public void setTempoDePreparo(LocalTime tempoDePreparo) { this.tempoDePreparo = tempoDePreparo; }
+    public void setTempoDePreparo(String tempoDePreparo) { this.tempoDePreparo = tempoDePreparo; }
 }

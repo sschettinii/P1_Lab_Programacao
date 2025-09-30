@@ -2,14 +2,21 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Receitas;
 import com.example.demo.service.ReceitasService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-@RestController
+@Controller
 @RequestMapping("receitas")
 public class ReceitasController {
     private final ReceitasService service;
@@ -17,50 +24,51 @@ public class ReceitasController {
     @Autowired
     public ReceitasController(ReceitasService service) { this.service = service; }
 
+
     @GetMapping
-    public List<Receitas> getAll() { return service.getAll(); }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getById(@PathVariable Long id) {
-        Receitas receita = service.getById(id);
-        if (receita != null) {
-            return ResponseEntity.ok(receita);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public String listarReceitas(Model model) {
+        model.addAttribute("receitas", service.getAll());
+        model.addAttribute("receita", new Receitas());
+        return "lista-receitas";
     }
 
-    @PostMapping
-    public ResponseEntity<Receitas> create(@RequestBody Receitas receita) {
-        try {
-            Receitas novaReceita = service.create(receita);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novaReceita); // 201 CREATED
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+    @PostMapping("/salvar")
+    public String salvarReceita(@Valid @ModelAttribute Receitas receita, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            List<Receitas> listaDeReceitas = service.getAll();
+            model.addAttribute("receitas", listaDeReceitas);
+            model.addAttribute("showModal", true);
+            model.addAttribute("receita", receita);
+            return "lista-receitas";
         }
+        service.create(receita);
+        return "redirect:/receitas";
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remove(@PathVariable Long id) {
-        try {
-            service.remove(id);
-            return ResponseEntity.noContent().build(); // 204 NO CONTENT
-        } catch (IndexOutOfBoundsException e) {
-            return ResponseEntity.notFound().build(); // 404 NOT FOUND
-        }
+    @PostMapping("/deletar/{id}")
+    public String deletarReceita(@PathVariable Long id) {
+        service.remove(id);
+        return "redirect:/receitas";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Contact> update(@PathVariable Long id, @RequestBody Receitas receita) {
-        if (!service.isValidRecept(receita)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400 BAD REQUEST
+    @PostMapping("/api/salvar")
+    @ResponseBody
+    public ResponseEntity<?> salvarReceitaAjax(@Valid @ModelAttribute Receitas receita, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = bindingResult.getFieldErrors().stream()
+                    .collect(Collectors.toMap(
+                            fieldError -> fieldError.getField(),
+                            DefaultMessageSourceResolvable::getDefaultMessage
+                    ));
+
+            return ResponseEntity.badRequest().body(errors);
         }
-        try {
-            Receitas updatedRecept = service.update(id, receita);
-            return ResponseEntity.ok(updatedRecept); // 200 OK
-        } catch (IndexOutOfBoundsException e) {
-            return ResponseEntity.notFound().build(); // 404 NOT FOUND
-        }
+
+        Receitas receitaSalva = service.create(receita);
+
+        return ResponseEntity.ok(receitaSalva);
     }
 }
 
