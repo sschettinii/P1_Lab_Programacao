@@ -26,8 +26,10 @@ public class ReceitasController {
 
 
     @GetMapping
-    public String listarReceitas(Model model) {
-        model.addAttribute("receitas", service.getAll());
+    public String listarReceitas(Model model, @RequestParam(value = "termo", required = false) String termoBusca) {
+        List<Receitas> receitas = service.search(termoBusca);
+
+        model.addAttribute("receitas", receitas);
         model.addAttribute("receita", new Receitas());
         return "lista-receitas";
     }
@@ -65,7 +67,6 @@ public class ReceitasController {
 
             return ResponseEntity.badRequest().body(errors);
         }
-
         Receitas receitaSalva = service.create(receita);
 
         return ResponseEntity.ok(receitaSalva);

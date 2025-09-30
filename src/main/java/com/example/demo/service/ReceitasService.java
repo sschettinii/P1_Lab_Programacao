@@ -8,15 +8,21 @@ import java.util.Optional;
 
 @Service
 public class ReceitasService {
-    private final ReceitasRepository receitasRepository;
+    private final ReceitasRepository repository;
 
-    public ReceitasService(ReceitasRepository receitasRepository) { this.receitasRepository = receitasRepository; }
+    public ReceitasService(ReceitasRepository repository) { this.repository = repository; }
 
     public List<Receitas> getAll() {
-        return receitasRepository.findAll();
+        return repository.findAll();
     }
     public Receitas create(Receitas receita) {
-        return receitasRepository.save(receita);
+        return repository.save(receita);
     }
-    public void remove(Long id) { receitasRepository.deleteById(id); }
+    public void remove(Long id) { repository.deleteById(id); }
+    public List<Receitas> search(String termo) {
+        if (termo == null || termo.isEmpty()) {
+            return repository.findAll();
+        }
+        return repository.findByNomeContainingIgnoreCaseOrIngredientesContainingIgnoreCaseOrModoDePreparoContainingIgnoreCase(termo, termo, termo);
+    }
 }

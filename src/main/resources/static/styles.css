@@ -4,7 +4,6 @@ body {
     background-color: #f4f4f4;
 }
 
-/* Estilo do Header */
 .main-header {
     background-color: #333;
     color: white;
@@ -18,7 +17,6 @@ body {
     padding-bottom: 10px;
 }
 
-/* Estilo da Caixa de Pesquisa */
 .search-container {
     margin-top: 15px;
     display: flex;
@@ -43,12 +41,10 @@ body {
     font-size: 1em;
 }
 
-/* Estilo da Área de Conteúdo */
 .main-content {
     padding: 20px 40px;
 }
 
-/* Estilo da Lista de Receitas */
 .receitas-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
