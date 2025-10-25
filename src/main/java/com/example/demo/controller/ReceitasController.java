@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Receitas;
 import com.example.demo.service.ReceitasService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -26,24 +27,42 @@ public class ReceitasController {
 
 
     @GetMapping
-    public String listarReceitas(Model model, @RequestParam(value = "termo", required = false) String termoBusca) {
-        List<Receitas> receitas = service.search(termoBusca);
+    public String listarReceitas(Model model, @RequestParam(value = "termo", required = false) String termoBusca, HttpSession session) {
+        String termoEfetivo;
+        if (termoBusca != null) {
+            session.setAttribute("termoBuscaSalvo", termoBusca);
+            termoEfetivo = termoBusca;
+        } else {
+            termoEfetivo = (String) session.getAttribute("termoBuscaSalvo");
+        }
+
+        List<Receitas> receitas = service.search(termoEfetivo);
 
         model.addAttribute("receitas", receitas);
         model.addAttribute("receita", new Receitas());
-        return "lista-receitas";
+        model.addAttribute("termoBusca", termoEfetivo);
+        return "receitas/lista-receitas";
     }
 
+    @GetMapping("/limpar-busca")
+    public String limparBusca(HttpSession session) {
+        session.removeAttribute("termoBuscaSalvo");
+
+        return "redirect:/receitas";
+    }
 
     @PostMapping("/salvar")
-    public String salvarReceita(@Valid @ModelAttribute Receitas receita, BindingResult bindingResult, Model model) {
+    public String salvarReceita(@Valid @ModelAttribute Receitas receita, BindingResult bindingResult, Model model, HttpSession session) {
+        String termoEfetivo = (String) session.getAttribute("termoBuscaSalvo");
         if (bindingResult.hasErrors()) {
             List<Receitas> listaDeReceitas = service.getAll();
             model.addAttribute("receitas", listaDeReceitas);
             model.addAttribute("showModal", true);
             model.addAttribute("receita", receita);
-            return "lista-receitas";
+            model.addAttribute("termoBusca", termoEfetivo);
+            return "receitas/lista-receitas";
         }
+
         service.create(receita);
         return "redirect:/receitas";
     }

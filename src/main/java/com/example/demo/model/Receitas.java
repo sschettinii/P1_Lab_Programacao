@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.cglib.core.Local;
@@ -26,10 +27,12 @@ public class Receitas {
 
     @NotBlank(message = "O modo de preparo não pode estar em branco")
     @Size(max = 1000, message = "O modo de preparo deve ter no máximo 1000 caracteres")
+    @Column(name = "modoDePreparo")
     private String modoDePreparo;
 
     @NotBlank(message = "O tempo de preparo não pode estar em branco")
-    @Size(max = 20, message = "O tempo de preparo deve ter no máximo 1000 caracteres")
+    @Size(max = 20, message = "O tempo de preparo deve ter no máximo 20 caracteres")
+    @Column(name = "tempoDePreparo")
     private String tempoDePreparo;
 
     public Receitas() {}
